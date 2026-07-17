@@ -239,14 +239,14 @@ function BookingsPanel() {
 
   async function updateStatus(id: string, status: string) {
     const { error } = await supabase.from("bookings").update({ status: status as any }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("تم تحديث الحالة");
     qc.invalidateQueries({ queryKey: ["bookings"] });
   }
 
   async function deleteBooking(id: string) {
     const { error } = await supabase.from("bookings").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("تم حذف الحجز");
     qc.invalidateQueries({ queryKey: ["bookings"] });
   }
@@ -345,7 +345,7 @@ function ServicesPanel() {
 
   async function del(id: string) {
     const { error } = await supabase.from("services").delete().eq("id", id);
-    if (error) return toast.error(error.message.includes("foreign key") ? "لا يمكن حذف خدمة مرتبطة بحجوزات — عطّلها بدلاً من الحذف" : error.message);
+    if (error) { toast.error(error.message.includes("foreign key") ? "لا يمكن حذف خدمة مرتبطة بحجوزات — عطّلها بدلاً من الحذف" : error.message); return; }
     toast.success("تم الحذف");
     qc.invalidateQueries({ queryKey: ["services"] });
   }
@@ -422,13 +422,13 @@ function BarbersPanel() {
     const { error } = dialog.editing
       ? await supabase.from("barbers").update(payload).eq("id", dialog.editing.id)
       : await supabase.from("barbers").insert(payload);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(dialog.editing ? "تم التحديث" : "تمت الإضافة");
     qc.invalidateQueries({ queryKey: ["barbers"] });
   }
   async function del(id: string) {
     const { error } = await supabase.from("barbers").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("تم الحذف");
     qc.invalidateQueries({ queryKey: ["barbers"] });
   }
@@ -503,13 +503,13 @@ function GalleryPanel() {
     const { error } = dialog.editing
       ? await supabase.from("gallery_images").update(payload).eq("id", dialog.editing.id)
       : await supabase.from("gallery_images").insert(payload);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(dialog.editing ? "تم التحديث" : "تمت إضافة الصورة");
     qc.invalidateQueries({ queryKey: ["gallery"] });
   }
   async function del(id: string) {
     const { error } = await supabase.from("gallery_images").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("تم الحذف");
     qc.invalidateQueries({ queryKey: ["gallery"] });
   }
@@ -572,13 +572,13 @@ function ReviewsPanel() {
 
   async function moderate(id: string, approve: boolean) {
     const { error } = await supabase.from("reviews").update({ is_approved: approve }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(approve ? "تم الاعتماد" : "تم الإخفاء");
     qc.invalidateQueries({ queryKey: ["reviews"] });
   }
   async function del(id: string) {
     const { error } = await supabase.from("reviews").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("تم الحذف");
     qc.invalidateQueries({ queryKey: ["reviews"] });
   }
@@ -641,19 +641,19 @@ function UsersPanel() {
     }
     if (has) {
       const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", role as any);
-      if (error) return toast.error(error.message);
+      if (error) { toast.error(error.message); return; }
     } else {
       const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: role as any });
-      if (error) return toast.error(error.message);
+      if (error) { toast.error(error.message); return; }
     }
     toast.success("تم تحديث الصلاحيات");
     qc.invalidateQueries({ queryKey: ["admin", "users"] });
   }
 
   async function delProfile(userId: string) {
-    if (userId === me?.id) return toast.error("لا يمكنك حذف حسابك من هنا");
+    if (userId === me?.id) { toast.error("لا يمكنك حذف حسابك من هنا"); return; }
     const { error } = await supabase.from("profiles").delete().eq("id", userId);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("تم حذف الملف الشخصي (الحساب الأصلي في نظام المصادقة يظل موجوداً)");
     qc.invalidateQueries({ queryKey: ["admin", "users"] });
   }
@@ -732,7 +732,7 @@ function SettingsPanel() {
     setSaving(key);
     const { error } = await supabase.from("site_settings").update({ value }).eq("key", key);
     setSaving(null);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("تم الحفظ");
     setDraft((d) => { const c = { ...d }; delete c[key]; return c; });
     qc.invalidateQueries({ queryKey: ["site_settings"] });
