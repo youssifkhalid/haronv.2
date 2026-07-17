@@ -60,6 +60,34 @@ function AdminPage() {
     qc.invalidateQueries({ queryKey: ["bookings"] });
   }
 
+  async function moderateReview(id: string, approve: boolean) {
+    const { error } = await supabase.from("reviews").update({ is_approved: approve }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success(approve ? "تم اعتماد التقييم" : "تم إخفاء التقييم");
+    qc.invalidateQueries({ queryKey: ["reviews"] });
+  }
+
+  async function deleteReview(id: string) {
+    if (!confirm("حذف هذا التقييم نهائياً؟")) return;
+    const { error } = await supabase.from("reviews").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("تم الحذف");
+    qc.invalidateQueries({ queryKey: ["reviews"] });
+  }
+
+  async function toggleBarber(id: string, active: boolean) {
+    const { error } = await supabase.from("barbers").update({ is_active: !active }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    qc.invalidateQueries({ queryKey: ["barbers"] });
+  }
+
+  async function toggleService(id: string, active: boolean) {
+    const { error } = await supabase.from("services").update({ is_active: !active }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    qc.invalidateQueries({ queryKey: ["services"] });
+  }
+
+
   const stats = {
     total: bookings.length,
     today: bookings.filter((b: any) => b.booking_date === new Date().toISOString().slice(0,10)).length,
