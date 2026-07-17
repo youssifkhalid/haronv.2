@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { CalendarCheck, Clock, User, Phone, Scissors, Users, TrendingUp, DollarSign } from "lucide-react";
+import { CalendarCheck, Clock, User, Phone, Scissors, Users, TrendingUp, DollarSign, Star, Check, X as XIcon, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { useAuth, useRoles } from "@/lib/auth";
-import { allBookingsQuery, servicesQuery } from "@/lib/queries";
+import { allBookingsQuery, servicesQuery, allReviewsQuery, barbersQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
