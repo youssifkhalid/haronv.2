@@ -110,10 +110,15 @@ function AdminPage() {
           <Stat icon={DollarSign} label="الإيرادات (المكتملة)" value={`${stats.revenue.toFixed(0)} ج.م`} />
         </div>
 
-        <div className="mt-8 flex gap-2 border-b border-border">
-          {(["bookings", "services"] as const).map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={`px-5 py-3 text-sm font-bold transition ${tab === t ? "border-b-2 border-gold text-gold" : "text-muted-foreground hover:text-foreground"}`}>
-              {t === "bookings" ? "الحجوزات" : "الخدمات"}
+        <div className="mt-8 flex flex-wrap gap-2 border-b border-border">
+          {([
+            ["bookings", "الحجوزات"],
+            ["services", "الخدمات"],
+            ["barbers", "الحلاقين"],
+            ["reviews", `التقييمات${reviews.filter((r:any)=>!r.is_approved).length ? ` (${reviews.filter((r:any)=>!r.is_approved).length})` : ""}`],
+          ] as const).map(([t, label]) => (
+            <button key={t} onClick={() => setTab(t as any)} className={`px-5 py-3 text-sm font-bold transition ${tab === t ? "border-b-2 border-gold text-gold" : "text-muted-foreground hover:text-foreground"}`}>
+              {label}
             </button>
           ))}
         </div>
@@ -170,9 +175,74 @@ function AdminPage() {
                   <span className="font-black text-gold">{s.price_egp} ج.م</span>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">{s.description}</p>
-                <div className="mt-2 text-xs text-muted-foreground">{s.duration_minutes} دقيقة</div>
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="text-xs text-muted-foreground">{s.duration_minutes} دقيقة</div>
+                  <button onClick={() => toggleService(s.id, s.is_active)} className="rounded-lg border border-border px-3 py-1 text-xs font-bold hover:bg-accent">
+                    {s.is_active ? "تعطيل" : "تفعيل"}
+                  </button>
+                </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {tab === "barbers" && (
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {barbers.map((b: any) => (
+              <div key={b.id} className="rounded-2xl border border-gold/10 bg-card p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold">{b.name}</h3>
+                    <div className="text-xs text-muted-foreground">{b.title ?? "—"}</div>
+                  </div>
+                  <div className="inline-flex items-center gap-1 text-gold"><Star className="h-3.5 w-3.5 fill-gold" /> {Number(b.rating ?? 5).toFixed(1)}</div>
+                </div>
+                {b.bio && <p className="mt-2 text-xs text-muted-foreground line-clamp-3">{b.bio}</p>}
+                <div className="mt-3 flex items-center justify-between">
+                  <span className={`text-xs font-bold ${b.is_active ? "text-emerald-400" : "text-muted-foreground"}`}>
+                    {b.is_active ? "مفعّل" : "معطّل"}
+                  </span>
+                  <button onClick={() => toggleBarber(b.id, b.is_active)} className="rounded-lg border border-border px-3 py-1 text-xs font-bold hover:bg-accent">
+                    {b.is_active ? "تعطيل" : "تفعيل"}
+                  </button>
+                </div>
+              </div>
+            ))}
+            {barbers.length === 0 && (
+              <div className="col-span-full p-10 text-center text-muted-foreground">لا يوجد حلاقين نشطين.</div>
+            )}
+          </div>
+        )}
+
+        {tab === "reviews" && (
+          <div className="mt-6 grid gap-3 lg:grid-cols-2">
+            {reviews.map((r: any) => (
+              <article key={r.id} className={`rounded-2xl border p-4 ${r.is_approved ? "border-gold/10 bg-card" : "border-amber-500/40 bg-amber-500/5"}`}>
+                <div className="flex items-center justify-between">
+                  <div className="inline-flex items-center gap-0.5 text-gold">
+                    {[1,2,3,4,5].map((n) => <Star key={n} className={`h-3.5 w-3.5 ${r.rating >= n ? "fill-gold" : "opacity-30"}`} />)}
+                  </div>
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${r.is_approved ? "bg-emerald-500/10 text-emerald-400" : "bg-amber-500/10 text-amber-400"}`}>
+                    {r.is_approved ? "معتمد" : "بانتظار المراجعة"}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-relaxed">{r.comment}</p>
+                <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{new Date(r.created_at).toLocaleDateString("ar-EG")}</span>
+                  <div className="flex gap-2">
+                    <button onClick={() => moderateReview(r.id, !r.is_approved)} className="inline-flex items-center gap-1 rounded-lg border border-border px-2 py-1 font-bold hover:bg-accent">
+                      {r.is_approved ? <><XIcon className="h-3 w-3" /> إخفاء</> : <><Check className="h-3 w-3" /> اعتماد</>}
+                    </button>
+                    <button onClick={() => deleteReview(r.id)} className="inline-flex items-center gap-1 rounded-lg border border-destructive/40 px-2 py-1 font-bold text-destructive hover:bg-destructive/10">
+                      <Trash2 className="h-3 w-3" /> حذف
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+            {reviews.length === 0 && (
+              <div className="col-span-full p-10 text-center text-muted-foreground">لا توجد تقييمات بعد.</div>
+            )}
           </div>
         )}
       </div>
