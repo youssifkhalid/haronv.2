@@ -405,7 +405,7 @@ const barberFields: Field[] = [
   { name: "name", label: "الاسم", required: true },
   { name: "title", label: "المسمى الوظيفي", placeholder: "حلاق أول" },
   { name: "bio", label: "نبذة", type: "textarea" },
-  { name: "photo_url", label: "رابط الصورة", type: "url", placeholder: "https://..." },
+  { name: "photo_url", label: "صورة الحلاق", type: "image" },
   { name: "rating", label: "التقييم (1-5)", type: "number" },
   { name: "sort_order", label: "الترتيب", type: "number" },
   { name: "is_active", label: "مفعّل", type: "boolean" },
@@ -484,7 +484,7 @@ function BarbersPanel() {
 /* =============================== GALLERY =============================== */
 const galleryFields: Field[] = [
   { name: "title", label: "العنوان", placeholder: "الصالون الداخلي" },
-  { name: "image_url", label: "رابط الصورة", type: "url", required: true, placeholder: "https://..." },
+  { name: "image_url", label: "الصورة", type: "image", required: true },
   { name: "alt_text", label: "الوصف (لذوي الاحتياجات وSEO)" },
   { name: "category", label: "التصنيف", placeholder: "الديكور / الحلاقة / الأدوات" },
   { name: "sort_order", label: "الترتيب", type: "number" },
@@ -528,7 +528,7 @@ function GalleryPanel() {
         </div>
         <AddButton onClick={() => setDialog({ open: true })} label="إضافة صورة" />
       </div>
-      <p className="text-xs text-muted-foreground">💡 أضف الصور برابط مباشر (يمكن استخدام Cloudinary أو Imgur أو أي مضيف). أخفِ الصورة بدل حذفها للحفاظ على الروابط.</p>
+      <p className="text-xs text-muted-foreground">💡 ارفع الصور مباشرة من جهازك — تحفظ آمنة في الاستضافة. أخفِ الصورة بدل حذفها للحفاظ عليها.</p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {images.map((g: any) => (
           <div key={g.id} className={`group overflow-hidden rounded-2xl border transition ${g.is_visible ? "border-gold/10 bg-card" : "border-border bg-muted/20 opacity-60"}`}>

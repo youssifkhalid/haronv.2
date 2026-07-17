@@ -83,7 +83,7 @@ export const allBookingsQuery = () => ({
   queryFn: async () => {
     const { data, error } = await supabase
       .from("bookings")
-      .select("*, services(name), barbers(name), profiles(full_name)")
+      .select("*, services(name), barbers(name), profiles(full_name, phone)")
       .order("booking_date", { ascending: false })
       .order("booking_time", { ascending: false })
       .limit(500);
@@ -91,6 +91,7 @@ export const allBookingsQuery = () => ({
     return data ?? [];
   },
 });
+
 
 export const approvedReviewsQuery = () => ({
   queryKey: ["reviews", "approved"],

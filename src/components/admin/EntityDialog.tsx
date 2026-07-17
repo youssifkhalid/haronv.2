@@ -1,13 +1,16 @@
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Trash2, Pencil, Plus } from "lucide-react";
+import { Trash2, Pencil, Plus, Upload, X, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-type FieldType = "text" | "number" | "textarea" | "url" | "boolean" | "email" | "tel";
+type FieldType = "text" | "number" | "textarea" | "url" | "boolean" | "email" | "tel" | "image";
+
 export type Field = {
   name: string;
   label: string;
@@ -57,6 +60,12 @@ export function EntityDialog<T extends Record<string, any>>({
                   <Switch checked={!!values[f.name]} onCheckedChange={(v) => setValues({ ...values, [f.name]: v })} />
                   <span className="text-xs text-muted-foreground">{values[f.name] ? "مفعّل" : "معطّل"}</span>
                 </div>
+              ) : f.type === "image" ? (
+                <ImageUploadField
+                  value={values[f.name] ?? ""}
+                  onChange={(url) => setValues({ ...values, [f.name]: url })}
+                  required={f.required}
+                />
               ) : (
                 <Input
                   type={f.type === "number" ? "number" : f.type === "url" ? "url" : f.type === "email" ? "email" : f.type === "tel" ? "tel" : "text"}
@@ -67,6 +76,7 @@ export function EntityDialog<T extends Record<string, any>>({
                   step={f.type === "number" ? "any" : undefined}
                 />
               )}
+
             </div>
           ))}
           <DialogFooter className="gap-2">
@@ -100,3 +110,70 @@ export function AddButton({ onClick, label = "إضافة جديد" }: { onClick:
 
 export function IconEdit() { return <Pencil className="h-3.5 w-3.5" />; }
 export function IconDelete() { return <Trash2 className="h-3.5 w-3.5" />; }
+
+const TEN_YEARS = 60 * 60 * 24 * 365 * 10;
+
+export function ImageUploadField({
+  value, onChange, required,
+}: { value: string; onChange: (url: string) => void; required?: boolean }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function upload(file: File) {
+    if (!file.type.startsWith("image/")) { toast.error("الملف يجب أن يكون صورة"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("حجم الصورة أكبر من 5 ميجا"); return; }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("media").upload(path, file, {
+        cacheControl: "31536000", contentType: file.type, upsert: false,
+      });
+      if (upErr) throw upErr;
+      const { data, error } = await supabase.storage.from("media").createSignedUrl(path, TEN_YEARS);
+      if (error) throw error;
+      onChange(data.signedUrl);
+      toast.success("تم رفع الصورة");
+    } catch (e: any) {
+      toast.error("تعذّر رفع الصورة: " + (e?.message ?? "خطأ"));
+    } finally { setUploading(false); }
+  }
+
+  return (
+    <div className="space-y-2">
+      {value ? (
+        <div className="relative group rounded-xl overflow-hidden border border-border">
+          <img src={value} alt="" className="h-40 w-full object-cover" />
+          <button type="button" onClick={() => onChange("")}
+            className="absolute top-2 left-2 rounded-full bg-destructive/90 p-1.5 text-destructive-foreground opacity-0 group-hover:opacity-100 transition">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="flex h-40 w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border hover:border-gold hover:bg-gold/5 transition"
+        >
+          {uploading ? <><Loader2 className="h-5 w-5 animate-spin text-gold" /> <span className="text-sm font-bold">جارٍ الرفع...</span></> :
+            <><Upload className="h-5 w-5 text-gold" /> <span className="text-sm font-bold">اختر صورة من جهازك</span></>}
+        </button>
+      )}
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        required={required && !value}
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ""; }}
+      />
+      {value && (
+        <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading}
+          className="text-xs font-bold text-gold hover:underline inline-flex items-center gap-1">
+          <Upload className="h-3 w-3" /> {uploading ? "جارٍ الرفع..." : "استبدال الصورة"}
+        </button>
+      )}
+    </div>
+  );
+}
+
