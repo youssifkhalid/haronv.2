@@ -10,7 +10,9 @@ const links = [
   { to: "/", label: "الرئيسية" },
   { to: "/services", label: "الخدمات" },
   { to: "/barbers", label: "الحلاقين" },
-  { to: "/booking", label: "احجز الآن" },
+  { to: "/gallery", label: "المعرض" },
+  { to: "/reviews", label: "الآراء" },
+  { to: "/booking", label: "احجز" },
   { to: "/contact", label: "تواصل" },
 ];
 
