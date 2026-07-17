@@ -113,6 +113,45 @@ export type Database = {
           },
         ]
       }
+      gallery_images: {
+        Row: {
+          alt_text: string | null
+          category: string | null
+          created_at: string
+          id: string
+          image_url: string
+          is_featured: boolean
+          is_visible: boolean
+          sort_order: number
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          alt_text?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          image_url: string
+          is_featured?: boolean
+          is_visible?: boolean
+          sort_order?: number
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          alt_text?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_featured?: boolean
+          is_visible?: boolean
+          sort_order?: number
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -203,6 +242,30 @@ export type Database = {
           price_egp?: number
           sort_order?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          description: string | null
+          is_public: boolean
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          is_public?: boolean
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          description?: string | null
+          is_public?: boolean
+          key?: string
+          updated_at?: string
+          value?: Json
         }
         Relationships: []
       }
