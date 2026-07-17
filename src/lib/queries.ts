@@ -62,3 +62,49 @@ export const allBookingsQuery = () => ({
     return data ?? [];
   },
 });
+
+export type Review = {
+  id: string; user_id: string; rating: number; comment: string;
+  is_approved: boolean; created_at: string;
+};
+
+export const approvedReviewsQuery = () => ({
+  queryKey: ["reviews", "approved"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("reviews")
+      .select("*")
+      .eq("is_approved", true)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    return (data ?? []) as Review[];
+  },
+});
+
+export const allReviewsQuery = () => ({
+  queryKey: ["reviews", "all"],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("reviews")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) throw error;
+    return (data ?? []) as Review[];
+  },
+});
+
+export const myReviewQuery = (userId: string | undefined) => ({
+  queryKey: ["reviews", "me", userId],
+  enabled: !!userId,
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("reviews")
+      .select("*")
+      .eq("user_id", userId!)
+      .maybeSingle();
+    if (error) throw error;
+    return data as Review | null;
+  },
+});

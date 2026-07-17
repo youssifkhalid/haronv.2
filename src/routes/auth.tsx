@@ -108,6 +108,13 @@ function AuthPage() {
             <button disabled={loading} className="mt-2 w-full rounded-xl bg-gold-gradient py-3 text-sm font-black text-gold-foreground shadow-gold hover:brightness-110 disabled:opacity-60">
               {loading ? "جارٍ المعالجة..." : mode === "login" ? "دخول" : "إنشاء حساب"}
             </button>
+            {mode === "login" && (
+              <div className="text-center">
+                <Link to="/reset-password" className="text-xs font-semibold text-muted-foreground hover:text-gold">
+                  نسيت كلمة المرور؟
+                </Link>
+              </div>
+            )}
           </form>
 
           <p className="mt-4 text-center text-xs text-muted-foreground">

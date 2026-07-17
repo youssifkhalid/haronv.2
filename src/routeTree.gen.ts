@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as ReviewsRouteImport } from './routes/reviews'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookingRouteImport } from './routes/booking'
 import { Route as BarbersRouteImport } from './routes/barbers'
@@ -27,6 +30,21 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewsRoute = ReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -73,6 +91,9 @@ export interface FileRoutesByFullPath {
   '/barbers': typeof BarbersRoute
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
+  '/gallery': typeof GalleryRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/reviews': typeof ReviewsRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
@@ -84,6 +105,9 @@ export interface FileRoutesByTo {
   '/barbers': typeof BarbersRoute
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
+  '/gallery': typeof GalleryRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/reviews': typeof ReviewsRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
@@ -96,6 +120,9 @@ export interface FileRoutesById {
   '/barbers': typeof BarbersRoute
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
+  '/gallery': typeof GalleryRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/reviews': typeof ReviewsRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
@@ -109,6 +136,9 @@ export interface FileRouteTypes {
     | '/barbers'
     | '/booking'
     | '/contact'
+    | '/gallery'
+    | '/reset-password'
+    | '/reviews'
     | '/services'
     | '/sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +150,9 @@ export interface FileRouteTypes {
     | '/barbers'
     | '/booking'
     | '/contact'
+    | '/gallery'
+    | '/reset-password'
+    | '/reviews'
     | '/services'
     | '/sitemap.xml'
   id:
@@ -131,6 +164,9 @@ export interface FileRouteTypes {
     | '/barbers'
     | '/booking'
     | '/contact'
+    | '/gallery'
+    | '/reset-password'
+    | '/reviews'
     | '/services'
     | '/sitemap.xml'
   fileRoutesById: FileRoutesById
@@ -143,6 +179,9 @@ export interface RootRouteChildren {
   BarbersRoute: typeof BarbersRoute
   BookingRoute: typeof BookingRoute
   ContactRoute: typeof ContactRoute
+  GalleryRoute: typeof GalleryRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  ReviewsRoute: typeof ReviewsRoute
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
@@ -161,6 +200,27 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reviews': {
+      id: '/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof ReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -223,6 +283,9 @@ const rootRouteChildren: RootRouteChildren = {
   BarbersRoute: BarbersRoute,
   BookingRoute: BookingRoute,
   ContactRoute: ContactRoute,
+  GalleryRoute: GalleryRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  ReviewsRoute: ReviewsRoute,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
