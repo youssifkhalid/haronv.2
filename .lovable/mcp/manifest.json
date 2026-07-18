@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "sdk_version": "0.23.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://qndvckyssyuljoplkngp.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "haroun-salon-mcp",
+      "version": "0.1.0",
+      "title": "صالون هارون - Haroun Barber"
+    },
+    "tools": [
+      {
+        "name": "list_services",
+        "title": "قائمة الخدمات",
+        "description": "يعرض كل خدمات صالون هارون المتاحة مع السعر والمدة.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_barbers",
+        "title": "قائمة الحلاقين",
+        "description": "يعرض فريق حلاقي صالون هارون المتاحين للحجز.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "my_bookings",
+        "title": "حجوزاتي",
+        "description": "يعرض حجوزات المستخدم الحالي في صالون هارون.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_booking",
+        "title": "إنشاء حجز جديد",
+        "description": "يحجز موعد جديد في صالون هارون للمستخدم الحالي. يتطلب معرّف الخدمة والحلاق والتاريخ والوقت.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "service_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "معرّف الخدمة (من list_services)"
+            },
+            "barber_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "معرّف الحلاق (من list_barbers)"
+            },
+            "booking_date": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "تاريخ الحجز YYYY-MM-DD"
+            },
+            "booking_time": {
+              "type": "string",
+              "pattern": "^\\d{2}:\\d{2}(:\\d{2})?$",
+              "description": "وقت الحجز HH:MM"
+            },
+            "notes": {
+              "description": "ملاحظات إضافية",
+              "type": "string"
+            }
+          },
+          "required": [
+            "service_id",
+            "barber_id",
+            "booking_date",
+            "booking_time"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "cancel_booking",
+        "title": "إلغاء حجز",
+        "description": "يلغي حجزًا موجودًا للمستخدم الحالي.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "booking_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "معرّف الحجز المراد إلغاؤه"
+            }
+          },
+          "required": [
+            "booking_id"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
