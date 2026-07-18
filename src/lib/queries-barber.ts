@@ -16,6 +16,7 @@ export type BarberFull = {
   tiktok: string | null;
   facebook: string | null;
   is_present_now: boolean;
+  chair_number: number | null;
   working_hours: Record<string, string> | null;
 };
 
