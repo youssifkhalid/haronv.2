@@ -650,16 +650,19 @@ export function CRMPanel() {
   );
 
   async function toggleFlag(userId: string, field: "is_vip" | "is_blocked", cur: boolean) {
-    const { error } = await supabase.from("customer_profiles_ext").upsert({ user_id: userId, [field]: !cur }, { onConflict: "user_id" });
+    const payload: any = { user_id: userId, [field]: !cur };
+    const { error } = await supabase.from("customer_profiles_ext").upsert(payload, { onConflict: "user_id" });
     if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["customer_profiles_ext"] });
   }
   async function saveNotes(userId: string, notes: string) {
-    const { error } = await supabase.from("customer_profiles_ext").upsert({ user_id: userId, admin_notes: notes }, { onConflict: "user_id" });
+    const payload: any = { user_id: userId, admin_notes: notes };
+    const { error } = await supabase.from("customer_profiles_ext").upsert(payload, { onConflict: "user_id" });
     if (error) { toast.error(error.message); return; }
     toast.success("تم حفظ الملاحظات");
     qc.invalidateQueries({ queryKey: ["customer_profiles_ext"] });
   }
+
 
   return (
     <div className="space-y-4">
