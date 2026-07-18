@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Scissors, Sparkles, Wind, Palette, Droplet, Crown, Star, Clock, ShieldCheck, Award, CalendarCheck, ChevronLeft } from "lucide-react";
+import { Scissors, Sparkles, Wind, Palette, Droplet, Crown, Star, Clock, ShieldCheck, Award, CalendarCheck, ChevronLeft, Armchair, Images } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { servicesQuery, barbersQuery, type Service, type Barber } from "@/lib/queries";
+import { SocialLinks } from "@/components/site/SocialIcons";
 import heroImg from "@/assets/hero-barbershop.jpg";
 import barber1 from "@/assets/barber-1.jpg";
 import barber2 from "@/assets/barber-2.jpg";
