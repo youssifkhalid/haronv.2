@@ -27,6 +27,76 @@ export type SiteSetting = {
   key: string; value: Record<string, any>; description: string | null; is_public: boolean;
 };
 
+// =================== NEW ADMIN QUERIES ===================
+const simpleList = (table: string, order = "created_at", asc = false) => ({
+  queryKey: [table],
+  queryFn: async () => {
+    const { data, error } = await (supabase.from as any)(table).select("*").order(order, { ascending: asc });
+    if (error) throw error;
+    return data ?? [];
+  },
+});
+
+export const promotionsQuery = () => simpleList("promotions");
+export const expensesQuery = () => simpleList("expenses", "expense_date");
+export const subscriptionPlansQuery = () => simpleList("subscription_plans", "sort_order", true);
+export const customerSubsQuery = () => ({
+  queryKey: ["customer_subscriptions"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("customer_subscriptions").select("*, subscription_plans(name,price_egp), profiles(full_name,phone)").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data ?? [];
+  },
+});
+export const auditLogQuery = () => ({
+  queryKey: ["audit_log"],
+  queryFn: async () => {
+    const { data, error } = await (supabase.from as any)("audit_log").select("*").order("created_at", { ascending: false }).limit(500);
+    if (error) throw error;
+    return data ?? [];
+  },
+});
+export const blackoutDatesQuery = () => simpleList("blackout_dates", "blackout_date");
+export const waitlistQuery = () => simpleList("waitlist");
+export const paymentMethodsQuery = () => simpleList("payment_methods", "sort_order", true);
+export const paymentProofsQuery = () => ({
+  queryKey: ["payment_proofs"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("payment_proofs").select("*, payment_methods(name), profiles(full_name,phone)").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data ?? [];
+  },
+});
+export const notificationTemplatesQuery = () => simpleList("notification_templates", "key", true);
+export const notificationsLogQuery = () => simpleList("notifications_log");
+export const contentPagesQuery = () => simpleList("content_pages", "slug", true);
+export const contentPageBySlugQuery = (slug: string) => ({
+  queryKey: ["content_pages", slug],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("content_pages").select("*").eq("slug", slug).maybeSingle();
+    if (error) throw error;
+    return data;
+  },
+});
+export const bannersQuery = () => simpleList("banners");
+export const activeBannersQuery = () => ({
+  queryKey: ["banners", "active"],
+  queryFn: async () => {
+    const now = new Date().toISOString();
+    const { data, error } = await supabase.from("banners").select("*").eq("is_active", true);
+    if (error) throw error;
+    return (data ?? []).filter((b: any) =>
+      (!b.starts_at || b.starts_at <= now) && (!b.ends_at || b.ends_at >= now)
+    );
+  },
+});
+export const contactMessagesQuery = () => simpleList("contact_messages");
+export const adminLoginLogQuery = () => simpleList("admin_login_log");
+export const adminPermissionsQuery = () => simpleList("admin_permissions", "user_id", true);
+export const posTransactionsQuery = () => simpleList("pos_transactions");
+export const customerProfilesExtQuery = () => simpleList("customer_profiles_ext", "updated_at");
+
+
 export const servicesQuery = () => ({
   queryKey: ["services"],
   queryFn: async () => {
