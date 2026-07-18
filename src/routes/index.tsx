@@ -216,3 +216,120 @@ function SectionHeading({ eyebrow, title, subtitle }: { eyebrow: string; title: 
     </div>
   );
 }
+
+function BarbersLive({ barbers }: { barbers: Barber[] }) {
+  const present = barbers.filter((b) => b.is_present_now);
+  const others = barbers.filter((b) => !b.is_present_now);
+  const list = present.length > 0 ? present : others;
+  const showBoth = present.length > 0 && others.length > 0;
+
+  if (barbers.length === 0) {
+    return <p className="mt-12 text-center text-muted-foreground">لا يوجد حلاقون معروضون حالياً.</p>;
+  }
+
+  return (
+    <>
+      {present.length > 0 && (
+        <div className="mt-6 flex items-center justify-center gap-2 text-xs font-bold text-emerald-400">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          </span>
+          {present.length} حلاق متواجد الآن في الصالون
+        </div>
+      )}
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {list.map((b, i) => (
+          <BarberLiveCard key={b.id} b={b} i={i} />
+        ))}
+      </div>
+      {showBoth && (
+        <>
+          <div className="mt-14 text-center text-xs font-black tracking-[0.35em] text-gold/70">— باقي الفريق —</div>
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {others.map((b, i) => <BarberLiveCard key={b.id} b={b} i={i} />)}
+          </div>
+        </>
+      )}
+      <div className="mt-10 text-center">
+        <Link to="/barbers" className="inline-flex items-center gap-2 rounded-xl border border-gold/40 px-6 py-3 text-sm font-bold text-gold hover:bg-gold/10">
+          كل الحلاقين <ChevronLeft className="h-4 w-4" />
+        </Link>
+      </div>
+    </>
+  );
+}
+
+function BarberLiveCard({ b, i }: { b: Barber; i: number }) {
+  const cover = b.cover_url || barberImgs[i % 3];
+  return (
+    <article
+      className="group animate-fade-up relative flex flex-col overflow-hidden rounded-3xl border border-gold/10 bg-surface transition hover:border-gold/40 hover:shadow-elegant"
+      style={{ animationDelay: `${i * 70}ms` }}
+    >
+      {/* Cover */}
+      <div className="relative h-32 overflow-hidden">
+        <img src={cover} alt="" className="h-full w-full object-cover opacity-70 transition duration-700 group-hover:scale-105" loading="lazy" />
+        <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent" />
+        {b.is_present_now && (
+          <div className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/95 px-2.5 py-1 text-[11px] font-bold text-white shadow-lg">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
+            </span>
+            متواجد الآن
+          </div>
+        )}
+        {b.chair_number != null && (
+          <div className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-background/80 backdrop-blur px-2.5 py-1 text-[11px] font-bold text-gold border border-gold/30">
+            <Armchair className="h-3.5 w-3.5" /> كرسي {b.chair_number}
+          </div>
+        )}
+      </div>
+
+      <div className="relative -mt-14 px-5 pb-5">
+        {/* Avatar */}
+        <div className="mx-auto h-24 w-24 rounded-2xl overflow-hidden border-4 border-surface bg-gold-gradient grid place-items-center text-3xl font-black text-gold-foreground shadow-gold">
+          {b.photo_url
+            ? <img src={b.photo_url} alt={b.name} className="h-full w-full object-cover" loading="lazy" />
+            : b.name.charAt(0)}
+        </div>
+
+        <div className="mt-3 text-center">
+          <div className="text-[11px] font-bold tracking-widest text-gold">{b.title ?? "حلاق"}</div>
+          <h3 className="mt-1 text-xl font-black">{b.name}</h3>
+          <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-gold/10 px-2.5 py-0.5 text-xs font-bold text-gold">
+            <Star className="h-3 w-3 fill-gold" /> {Number(b.rating ?? 5).toFixed(1)}
+          </div>
+        </div>
+
+        {b.bio && (
+          <p className="mt-3 text-center text-sm text-muted-foreground line-clamp-2 leading-6">{b.bio}</p>
+        )}
+
+        {/* Socials */}
+        <div className="mt-4 flex justify-center">
+          <SocialLinks whatsapp={b.whatsapp ?? null} instagram={b.instagram ?? null} tiktok={b.tiktok ?? null} facebook={b.facebook ?? null} size="sm" />
+        </div>
+
+        {/* Actions */}
+        <div className="mt-5 grid grid-cols-2 gap-2">
+          <Link
+            to="/booking"
+            search={{ barber: b.id } as any}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gold-gradient px-3 py-2.5 text-xs font-black text-gold-foreground shadow-gold transition hover:brightness-110"
+          >
+            <CalendarCheck className="h-4 w-4" /> احجز
+          </Link>
+          <Link
+            to="/barbers/$barberId"
+            params={{ barberId: b.id }}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-gold/40 px-3 py-2.5 text-xs font-black text-gold hover:bg-gold/10"
+          >
+            <Images className="h-4 w-4" /> أعمالي
+          </Link>
+        </div>
+      </div>
+    </article>
+  );
+}
