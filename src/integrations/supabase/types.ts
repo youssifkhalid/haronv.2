@@ -175,6 +175,7 @@ export type Database = {
       barbers: {
         Row: {
           bio: string | null
+          chair_number: number | null
           cover_url: string | null
           created_at: string
           facebook: string | null
@@ -194,6 +195,7 @@ export type Database = {
         }
         Insert: {
           bio?: string | null
+          chair_number?: number | null
           cover_url?: string | null
           created_at?: string
           facebook?: string | null
@@ -213,6 +215,7 @@ export type Database = {
         }
         Update: {
           bio?: string | null
+          chair_number?: number | null
           cover_url?: string | null
           created_at?: string
           facebook?: string | null
